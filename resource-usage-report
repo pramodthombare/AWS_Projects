@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#Author : Pramod Thombare
+#Description : script will track aws resource usage
+# AWS S3
+# AWS EC2
+# AWS Lambda
+# AWS IAM User
+# I have connected with aws account using gimme creds and then executed this script
+#This script further schedule in cron tab to get the reports on daily basis
+# debugging mode
+set -x
+
+#list s3 bucket
+echo "Printing s3 bucket" > resourse-usage.txt
+aws s3 ls --profile <profile-name> >> resourse-usage.txt
+
+
+# List Ec2 Instance
+echo "Printing ec2 instance"  >> resourse-usage.txt
+#aws ec2 describe-instances --region us-west-2 --profile MicroservicesInternal-Administrators
+aws ec2 describe-instances --region us-west-1 --profile <profile-name> | jq '.Reservations[].Instances[] | {InstanceId, ImageId}' >> resourse-usage.txt
+
+
+#list lambda
+echo "Printing lambda"  >> resourse-usage.txt
+#aws lambda list-functions --region us-west-2 --profile MicroservicesInternal-Administrators
+aws lambda list-functions --region us-west-2 --profile <profile-name> | jq '.Functions[].FunctionName' >> resourse-usage.txt
+
+#list IAM user
+echo "Printing IAM user"  >> resourse-usage.txt
+#aws iam list-users --region us-west-2 --profile MicroservicesInternal-Administrators
+aws iam list-users --region us-west-2 --profile <profile-name> | jq '.Users[].UserName' >> resourse-usage.txt
